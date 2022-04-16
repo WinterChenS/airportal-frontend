@@ -9,6 +9,7 @@
             </el-radio-group>
         </div>
             <el-form 
+            v-show="radio1==='登录'"
             :model="ruleForm"
             :rules="rules"
             ref="ruleForm"
@@ -21,6 +22,28 @@
               </el-form-item>
               <el-form-item class="btns">
                 <el-button type="primary" @click="submitForm('ruleForm')">登录</el-button>
+              </el-form-item>
+            </el-form>
+            <el-form 
+            :model="registerForm"
+            :rules="registerRules"
+            ref="registerForm"
+            v-show="radio1==='注册'"
+            >
+              <el-form-item label="昵称" prop="nikeName">
+                <el-input v-model="registerForm.nikeName" placeholder=""></el-input>
+              </el-form-item>
+              <el-form-item label="邮箱" prop="email">
+                <el-input v-model="registerForm.email" placeholder=""></el-input>
+              </el-form-item>
+              <el-form-item label="用户名" prop="username">
+                <el-input v-model="registerForm.userName" placeholder=""></el-input>
+              </el-form-item>
+              <el-form-item label="密码" prop="password">
+                <el-input v-model="registerForm.pass" placeholder=""></el-input>
+              </el-form-item>
+              <el-form-item class="btns">
+                <el-button type="primary" @click="submitRegisterForm('registerForm')">注册</el-button>
               </el-form-item>
             </el-form>
         </div>
@@ -51,6 +74,22 @@ export default {
                 callback();
             }
         };
+        var validateEmail = (rule, value, callback) => {
+            const regEmail = /^([a-zA-Z]|[0-9])(\w|\-)*@[a-zA-Z0-9]+\.([a-zA-Z]{2,4})$/;
+            if (regEmail.test(value)) {
+                // 合法的邮箱
+                callback();
+            } else {
+                callback(new Error('请输入合法的邮箱'));
+            }
+        };
+        var validateNikeName = (rule, value, callback) => {
+            if(value.length < 1) {
+                callback(new Error("昵称不能少于一个字符"));
+            } else {
+                callback();
+            }
+        };
         return {
             ruleForm: {
                 userName: "",
@@ -66,7 +105,31 @@ export default {
                     trigger: "blur"
                 }]
             },
+            registerRules: {
+                userName: [{
+                    validator: validateUsername,
+                    trigger: "blur"
+                }],
+                pass: [{
+                    validator: validatePassword,
+                    trigger: "blur"
+                }],
+                nickName: [{
+                    validator: validateNikeName,
+                    trigger: "blur"
+                }],
+                email: [{
+                    validator: validateEmail,
+                    trigger: "blur"
+                }]
+            },
             radio1: '登录',
+            registerForm: {
+                nickname: "",
+                userName: "",
+                pass: "",
+                email: ""
+            }
         };
     },
     mounted() {
@@ -94,6 +157,31 @@ export default {
                                     this.$router.push("/");
                             
                             
+                                }
+                            });
+                } else {
+                    return false;
+                }
+            });
+        },
+        submitRegisterForm(formName) {
+            sessionStorage.clear()
+            sessionStorage.clear()
+            this.$refs[formName].validate(valid => {
+                if (valid) {
+                    this.$api.register(this.registerForm).then(res => {
+                        debugger
+                        if (res.code === 1) {
+                            const data = res.object;
+                            sessionStorage.setItem("token", res.data.token);
+                            
+                                    this.$message({
+                                        type: "success",
+                                        message: "注册成功!"
+                                    });
+                                    sessionStorage.setItem("user", JSON.stringify(res.data));
+                                    this.radio1='登录'
+                                    // todo: 回填用户名
                                 }
                             });
                 } else {
@@ -208,13 +296,8 @@ export default {
 .login {
     display: flex;
     flex-direction: column;
-    
-    .login-box {
-        height: 100px;
-        justify-content: center; /* 水平居中 */
-        align-items: center;     /* 垂直居中 */
-        height: calc(100vh - 80px);
-        width: calc(100vh - 680px);
-    }
+    align-items: center;
+    justify-content: center;
+    height: 80vh;
 }
 </style>

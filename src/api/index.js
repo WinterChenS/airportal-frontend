@@ -3,7 +3,7 @@
  * @Author: winterchen
  * @Description: TODO
  * @Version: 1.0
- * @LastEditTime: 2022-04-15 13:39:57
+ * @LastEditTime: 2022-04-16 13:49:23
  */
 import { request } from "./request.js";
 
@@ -19,7 +19,7 @@ const UserService = {
     return request.post(`${url}/register`, data);
   },
   logout(data) {
-    return request.post('/user/logout', data);
+    return request.post('${url}/logout', data);
   }
 };
 export const api = {
