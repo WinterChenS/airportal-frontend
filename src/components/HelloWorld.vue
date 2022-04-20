@@ -73,17 +73,7 @@
       </div>
     </el-dialog>
 
-    <el-dialog title="提示" :visible.sync="uploadSuccess" width="30%">
-      <div>文件已成功发送</div>
-      <div>您的取件码</div>
-      <div>{{ tackCode }}</div>
-      <div>接收文件时，请输入该6位数取件码</div>
-      <div>您也可以 <a class="link" id="copy-link" v-clipboard:copy="downloadUrl" v-clipboard:success="onCopy">复制下载链接</a>
-      </div>
-      <span slot="footer" class="dialog-footer">
-        <el-button type="primary" @click="uploadSuccess = false">确 定</el-button>
-      </span>
-    </el-dialog>
+
     <el-dialog title="取件" :visible.sync="tackCodeFormVisible">
       <el-form :model="takeForm" :rules="takeRules" label-width="80px" class="app-form" ref="takeForm">
         <el-form-item label="">
@@ -104,13 +94,13 @@
         <el-button type="primary" v-clipboard:copy="content" v-clipboard:success="onCopy">复 制</el-button>
       </div>
     </el-dialog>
-    <el-dialog title="提示" :visible.sync="uploadSuccess" width="30%">
-      <div>文件已成功发送</div>
-      <div>您的取件码</div>
-      <div>{{ tackCode }}</div>
-      <div>接收文件时，请输入该6位数取件码</div>
-      <div>您也可以 <a class="link" id="copy-link" v-clipboard:copy="downloadUrl" v-clipboard:success="onCopy">复制下载链接</a>
-      </div>
+    <el-dialog title="" :visible.sync="uploadSuccess" width="30%">
+      <p class="popup-title">文件已成功发送</p>
+      <p>您的取件码</p>
+      <p id="receive-code">{{ tackCode }}</p>
+      <p>接收文件时，请输入该6位数取件码</p>
+      <p>您也可以 <a class="link" v-clipboard:copy="downloadUrl" v-clipboard:success="onCopy">复制下载链接</a>
+      </p>
       <span slot="footer" class="dialog-footer">
         <el-button type="primary" @click="uploadSuccess = false">确 定</el-button>
       </span>
@@ -442,5 +432,18 @@ a {
 
 .app-dialog-box {
   border-radius: 10px;
+}
+
+.popup-title {
+  font-size: 20px;
+  margin-top: 0px;
+  color: #0c0c0c;
+}
+
+#receive-code {
+  font-size: 30px;
+  margin-top: 10px;
+  margin-bottom: 10px;
+  color: #0c0c0c;
 }
 </style>
