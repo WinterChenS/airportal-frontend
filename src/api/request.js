@@ -74,7 +74,8 @@
  
      if(response.data.code === 2001){
        //登录超时重定向
-       window.location.hash = "/login"
+       
+       window.location.href = "/login"
      }
       else if (response.data.code !== 1) {
         
@@ -133,6 +134,21 @@
        console.log(err);
      }
    },
+   async uploadFile(url, query, data) {
+      try {
+        let headers = { "Content-Type": "multipart/form-data" };
+        let res = await axios.post(url + '?' + qs.stringify(query), data, headers);
+        res = res.data;
+        return new Promise(resolve => {
+          if (res.code === 1 ) {
+            resolve(res);
+          }
+          resolve(res);
+        });
+      } catch (err) {
+        console.log(err);
+      }
+    },
     async postForm(url, data) {
      try {
        let headers = { "Content-Type": "application/x-www-form-urlencoded; charset=UTF-8" };

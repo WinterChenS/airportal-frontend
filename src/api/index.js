@@ -3,14 +3,14 @@
  * @Author: winterchen
  * @Description: TODO
  * @Version: 1.0
- * @LastEditTime: 2022-04-16 13:49:23
+ * @LastEditTime: 2022-04-19 15:40:01
  */
 import { request } from "./request.js";
 
 
 // 登录模块
 let url = "/user"
-let url1 = "/share"
+let shareUrl = "/share"
 const UserService = {
   login(data) {
     return request.post(`${url}/login`, data);
@@ -22,6 +22,27 @@ const UserService = {
     return request.post('${url}/logout', data);
   }
 };
+
+const ShareService = {
+  upload(query, data) {
+    return request.uploadFile(`${shareUrl}/upload/file`, query, data);
+  },
+  uploadContent(query) {
+    return request.uploadFile(`${shareUrl}/upload/content`, query, null);
+  },
+  checkPass(code) {
+    console.log(code, "code=")
+    return request.get(`${shareUrl}/check/need-pass/${code}`, null);
+  },
+  take(code, pass) {
+    return request.get(`${shareUrl}/take/${code}`, {pass: pass});
+  },
+  getFileInfo(code, pass) {
+    return request.get(`${shareUrl}/info/${code}`, {pass: pass});
+  }
+};
+
 export const api = {
-  ...UserService
+  ...UserService,
+  ...ShareService
 };

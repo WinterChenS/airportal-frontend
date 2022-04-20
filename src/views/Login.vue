@@ -18,7 +18,7 @@
                 <el-input v-model="ruleForm.userName" placeholder=""></el-input>
               </el-form-item>
               <el-form-item label="密码" prop="password">
-                <el-input v-model="ruleForm.pass" placeholder=""></el-input>
+                <el-input v-model="ruleForm.pass" placeholder="" show-password></el-input>
               </el-form-item>
               <el-form-item class="btns">
                 <el-button type="primary" @click="submitForm('ruleForm')">登录</el-button>
@@ -40,7 +40,7 @@
                 <el-input v-model="registerForm.userName" placeholder=""></el-input>
               </el-form-item>
               <el-form-item label="密码" prop="password">
-                <el-input v-model="registerForm.pass" placeholder=""></el-input>
+                <el-input v-model="registerForm.pass" placeholder="" show-password></el-input>
               </el-form-item>
               <el-form-item class="btns">
                 <el-button type="primary" @click="submitRegisterForm('registerForm')">注册</el-button>
