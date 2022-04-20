@@ -212,8 +212,8 @@ export default {
       dialogTableVisible: false,
       form: {
         pass: '',
-        maxGetCount: '',
-        expire: ''
+        maxGetCount: '2',
+        expire: '12'
       },
       formLabelWidth: '120px',
       file: null,
@@ -231,8 +231,8 @@ export default {
       contentForm: {
         content: '',
         pass: '',
-        maxGetCount: '',
-        expire: ''
+        maxGetCount: '2',
+        expire: '12'
       },
       uploadProcessVisible: false,
       percentage: 10,
@@ -240,9 +240,6 @@ export default {
   },
   methods: {
     async upload (e) {
-      // debugger
-      // const size = e.file.size / 1024 / 1024 > 0.1 ? `(${(e.file.size / 1024 / 1024).toFixed(1)}M)` : `(${(e.file.size / 1024).toFixed(1)}KB)`
-      // e.file.name.indexOf('M') > -1 || e.file.name.indexOf('KB') > -1 ? e.file.name : e.file.name += size
       let formData = new FormData()
       formData.append("file", e.file)
       console.log(formData)
