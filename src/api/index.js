@@ -3,7 +3,7 @@
  * @Author: winterchen
  * @Description: TODO
  * @Version: 1.0
- * @LastEditTime: 2022-04-19 15:40:01
+ * @LastEditTime: 2022-04-20 10:36:43
  */
 import { request } from "./request.js";
 
@@ -39,6 +39,9 @@ const ShareService = {
   },
   getFileInfo(code, pass) {
     return request.get(`${shareUrl}/info/${code}`, {pass: pass});
+  },
+  getFileDownloadUrl(code, pass) {
+    return request.getUrl() + `${shareUrl}/take/${code}?pass=${pass}`;
   }
 };
 

@@ -216,7 +216,7 @@
        console.log(err);
      }
    },
-   getExport(data,name,type) {
+   async getExport(data,name,type) {
      let Authorization = JSON.parse(sessionStorage.getItem("user")).token;
      var xhr = new XMLHttpRequest();
      xhr.open("GET", data, true);

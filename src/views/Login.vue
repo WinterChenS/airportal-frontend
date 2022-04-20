@@ -1,50 +1,40 @@
 <template>
     <div class="login">
         <div class="login-box">
-        <div>
-            <el-radio-group v-model="radio1">
-            <el-radio-button label="登录"></el-radio-button>
-            <el-radio-button label="注册"></el-radio-button>
-            <el-radio-button label="重置"></el-radio-button>
-            </el-radio-group>
-        </div>
-            <el-form 
-            v-show="radio1==='登录'"
-            :model="ruleForm"
-            :rules="rules"
-            ref="ruleForm"
-            >
-              <el-form-item label="用户名" prop="username">
-                <el-input v-model="ruleForm.userName" placeholder=""></el-input>
-              </el-form-item>
-              <el-form-item label="密码" prop="password">
-                <el-input v-model="ruleForm.pass" placeholder="" show-password></el-input>
-              </el-form-item>
-              <el-form-item class="btns">
-                <el-button type="primary" @click="submitForm('ruleForm')">登录</el-button>
-              </el-form-item>
+            <div>
+                <el-radio-group v-model="radio1">
+                    <el-radio-button label="登录"></el-radio-button>
+                    <el-radio-button label="注册"></el-radio-button>
+                    <el-radio-button label="重置"></el-radio-button>
+                </el-radio-group>
+            </div>
+            <el-form v-show="radio1 === '登录'" :model="ruleForm" :rules="rules" ref="ruleForm">
+                <el-form-item label="用户名" prop="username">
+                    <el-input v-model="ruleForm.userName" placeholder=""></el-input>
+                </el-form-item>
+                <el-form-item label="密码" prop="password">
+                    <el-input v-model="ruleForm.pass" placeholder="" show-password></el-input>
+                </el-form-item>
+                <el-form-item class="btns">
+                    <el-button type="primary" @click="submitForm('ruleForm')">登录</el-button>
+                </el-form-item>
             </el-form>
-            <el-form 
-            :model="registerForm"
-            :rules="registerRules"
-            ref="registerForm"
-            v-show="radio1==='注册'"
-            >
-              <el-form-item label="昵称" prop="nikeName">
-                <el-input v-model="registerForm.nikeName" placeholder=""></el-input>
-              </el-form-item>
-              <el-form-item label="邮箱" prop="email">
-                <el-input v-model="registerForm.email" placeholder=""></el-input>
-              </el-form-item>
-              <el-form-item label="用户名" prop="username">
-                <el-input v-model="registerForm.userName" placeholder=""></el-input>
-              </el-form-item>
-              <el-form-item label="密码" prop="password">
-                <el-input v-model="registerForm.pass" placeholder="" show-password></el-input>
-              </el-form-item>
-              <el-form-item class="btns">
-                <el-button type="primary" @click="submitRegisterForm('registerForm')">注册</el-button>
-              </el-form-item>
+            <el-form :model="registerForm" :rules="registerRules" ref="registerForm" v-show="radio1 === '注册'">
+                <el-form-item label="昵称" prop="nikeName">
+                    <el-input v-model="registerForm.nikeName" placeholder=""></el-input>
+                </el-form-item>
+                <el-form-item label="邮箱" prop="email">
+                    <el-input v-model="registerForm.email" placeholder=""></el-input>
+                </el-form-item>
+                <el-form-item label="用户名" prop="username">
+                    <el-input v-model="registerForm.userName" placeholder=""></el-input>
+                </el-form-item>
+                <el-form-item label="密码" prop="password">
+                    <el-input v-model="registerForm.pass" placeholder="" show-password></el-input>
+                </el-form-item>
+                <el-form-item class="btns">
+                    <el-button type="primary" @click="submitRegisterForm('registerForm')">注册</el-button>
+                </el-form-item>
             </el-form>
         </div>
     </div>
@@ -59,7 +49,7 @@ import {
 var interval = null
 export default {
 
-    data() {
+    data () {
         var validateUsername = (rule, value, callback) => {
             if (value.trim() === "") {
                 callback(new Error("请输入用户名"));
@@ -84,7 +74,7 @@ export default {
             }
         };
         var validateNikeName = (rule, value, callback) => {
-            if(value.length < 1) {
+            if (value.length < 1) {
                 callback(new Error("昵称不能少于一个字符"));
             } else {
                 callback();
@@ -132,13 +122,13 @@ export default {
             }
         };
     },
-    mounted() {
-    
+    mounted () {
+
 
     },
     methods: {
-       
-        submitForm(formName) {
+
+        submitForm (formName) {
             sessionStorage.clear()
             sessionStorage.clear()
             this.$refs[formName].validate(valid => {
@@ -148,23 +138,23 @@ export default {
                         if (res.code === 1) {
                             const data = res.object;
                             sessionStorage.setItem("token", res.data.token);
-                            
-                                    this.$message({
-                                        type: "success",
-                                        message: "登陆成功!"
-                                    });
-                                    sessionStorage.setItem("user", JSON.stringify(res.data));
-                                    this.$router.push("/");
-                            
-                            
-                                }
+
+                            this.$message({
+                                type: "success",
+                                message: "登陆成功!"
                             });
+                            sessionStorage.setItem("user", JSON.stringify(res.data));
+                            this.$router.push("/");
+
+
+                        }
+                    });
                 } else {
                     return false;
                 }
             });
         },
-        submitRegisterForm(formName) {
+        submitRegisterForm (formName) {
             sessionStorage.clear()
             sessionStorage.clear()
             this.$refs[formName].validate(valid => {
@@ -174,31 +164,31 @@ export default {
                         if (res.code === 1) {
                             const data = res.object;
                             sessionStorage.setItem("token", res.data.token);
-                            
-                                    this.$message({
-                                        type: "success",
-                                        message: "注册成功!"
-                                    });
-                                    sessionStorage.setItem("user", JSON.stringify(res.data));
-                                    this.radio1='登录'
-                                    // todo: 回填用户名
-                                }
+
+                            this.$message({
+                                type: "success",
+                                message: "注册成功!"
                             });
+                            sessionStorage.setItem("user", JSON.stringify(res.data));
+                            this.radio1 = '登录'
+                            // todo: 回填用户名
+                        }
+                    });
                 } else {
                     return false;
                 }
             });
         },
-        openDownFile() {
+        openDownFile () {
             // this.$refs.helpDialog.init();
         },
-        download(key) {
+        download (key) {
             // this.$refs.helpDialog.download(key);
         },
-        changeInput() {
+        changeInput () {
             this.$refs.passwordFocus.focus()
         },
-        changePos() {
+        changePos () {
             let width = document.documentElement.clientWidth;
             let height = document.documentElement.clientHeight;
             this.Hoffset = this.$refs.thediv.offsetHeight;
@@ -233,17 +223,17 @@ export default {
                 this.xPos = (width - this.Woffset);
             }
         },
-        clearFdAd() {
+        clearFdAd () {
             clearInterval(interval)
         },
-        starFdAd() {
+        starFdAd () {
             interval = setInterval(this.changePos, 20)
         },
-        closeFrame() {
+        closeFrame () {
             interval = null
             this.frameShow = false
         },
-        async getSysPopUpWindowInfoFn() {
+        async getSysPopUpWindowInfoFn () {
             let res1 = await this.$api.getFloatWindowSetting()
             let code = res1.object.code
             let res = {}
@@ -264,7 +254,7 @@ export default {
                 clearInterval(interval)
             }
         },
-        getSystemTitleAndBackgroundImg() {
+        getSystemTitleAndBackgroundImg () {
             this.$api.getSystemTitleAndBackgroundImg().then((res) => {
                 if (res.code === 1) {
                     this.loginTitle = res.object.systemTitleLogo || '';
@@ -272,9 +262,9 @@ export default {
                     this.loginFrameImg = res.object.loginFrameImg || '';
                     this.loginBoxImg = res.object.loginBoxImg || '';
                     // this.loginBoxImg = res.object.systemTitleLogo || '';
-                    let iconImg= res.object.labelIcon || '/ewell.ico';
+                    let iconImg = res.object.labelIcon || '/ewell.ico';
 
-                    document.querySelector('link[type="image/x-icon"]').href=iconImg;
+                    document.querySelector('link[type="image/x-icon"]').href = iconImg;
 
                     if (res.object.systemTitleName) {
                         document.title = res.object.systemTitleName
@@ -283,7 +273,7 @@ export default {
             })
         }
     },
-    beforeDestroy() {
+    beforeDestroy () {
         this.$once('hook:beforeDestroy', () => {
             clearInterval(interval)
             this.frameShow = false
