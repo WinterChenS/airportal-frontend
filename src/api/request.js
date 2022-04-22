@@ -71,13 +71,12 @@
  // 响应拦截器即异常处理
  axios.interceptors.response.use(
    response => {
- 
      if(response.data.code === 2001){
        //登录超时重定向
        
        window.location.href = "/login"
      }
-      else if (response.data.code !== 1) {
+      else if (response.data.code !== 1 && response.statusText !== "OK") {
         
         console.log(response);
         Message.error(response.data.message);
@@ -181,9 +180,7 @@
        let res = await axios.put(url, data);
        res = res.data;
        return new Promise(resolve => {
-         if (res.code === 1) {
-           resolve(res);
-         }
+         resolve(res);
        });
      } catch (err) {
        console.log(err);

@@ -106,11 +106,8 @@
       </span>
     </el-dialog>
 
-    <el-dialog title="" :visible.sync="uploadProcessVisible">
+    <el-dialog title="上传中.." :visible.sync="uploadProcessVisible">
       <el-progress :percentage="percentage" :color="customColorMethod"></el-progress>
-      <div slot="footer" class="dialog-footer">
-        <el-button type="primary" @click="uploadProcessVisible = false">确 定</el-button>
-      </div>
     </el-dialog>
     <el-dialog title="取件" :visible.sync="takeContentVisible">
       <el-input type="textarea" :rows="10" placeholder="" v-model="content" size="medium" :clearable="true">
@@ -226,6 +223,11 @@ export default {
       },
       uploadProcessVisible: false,
       percentage: 10,
+      fileSize: 0,
+      out5M: false,
+      fileInfo: {},
+      fileB: null,
+      taskList: 0,
     };
   },
   methods: {
@@ -234,6 +236,7 @@ export default {
       formData.append("file", e.file)
       console.log(formData)
       this.file = formData;
+      this.fileB = e.file;
     },
     handleChange (file, fileList) {
       this.hasFile();
@@ -243,37 +246,106 @@ export default {
       this.dialogTableVisible = true;
     },
     beforeUpload (file) {
+      this.fileSize = file.size;
+      this.out5M = file.size / 1024 / 1024 > 5;
       const isLt2M = file.size / 1024 / 1024 < 500;
+      this.fileInfo = file;
       if (!isLt2M) {
         this.$message.error('上传文件大小大小不能超过 500MB!');
         return isLt2M;
       }
     },
+    multipartUpload (chunkUploadUrls, chunkSize) {
+      return new Promise((resolve1) => {
+        var list = [];
+        for (var item of chunkUploadUrls) {
+          //分片开始位置
+          let start = (item.partNumber) * chunkSize
+          //分片结束位置
+          let end = Math.min(this.fileSize, start + chunkSize)
+          //取文件指定范围内的byte，从而得到分片数据
+          let _chunkFile = this.fileB.slice(start, end)
+          console.log("开始上传第" + item.partNumber + "个分片")
+
+          let pro = new Promise((resolve) => {
+            this.$api.multipartUpload(item.uploadUrl, _chunkFile).then(res => {
+              console.log(res, "res=")
+              console.log("完成上传第" + item.partNumber + "个分片")
+              // list.push(this.taskList);
+              this.taskList++;
+              resolve(this.taskList++);
+              if (this.percentage <= 80) {
+                this.percentage += 10;
+              }
+            });
+          });
+          list.push(pro);
+        }
+        resolve1(list);
+      });
+
+
+
+    },
     uploadFile (formName) {
       console.log(formName);
       this.$refs[formName].validate(valid => {
         if (valid) {
-          const config = {
-            onUploadProgress: progressEvent => {
-              // progressEvent.loaded:已上传文件大小
-              // progressEvent.total:被上传文件的总大小
-              this.percentage = Number((progressEvent.loaded / progressEvent.total * 100).toFixed(2))
-            }
+          if (this.out5M) {//大于5m使用分片上传
+            this.dialogTableVisible = false;
+            this.uploadProcessVisible = true;
+            const chunkSize = 5 * 1024 * 1024;
+            const chunkCount = Math.ceil(this.fileSize / chunkSize);
+            console.log(this.fileInfo);
+            this.$api.createMultipartUpload(this.fileInfo.name, chunkCount).then(async res => {
+              console.log("当前文件上传情况：初次上传 或 断点续传")
+              console.log(res.data);
+              if (res.code === 1) {
+                var chunkUploadUrls = res.data.chunks;
+
+                var wait = await this.multipartUpload(chunkUploadUrls, chunkSize);
+                console.log(wait);
+                Promise.all(wait)
+                  .then(resultList => {
+                    const completeDate = { uploadId: res.data.uploadId, fileName: this.fileInfo.name, chunkSize: chunkCount, fileSize: this.fileSize, contentType: this.fileInfo.type, expire: this.form.expire, pass: this.form.pass, maxGetCount: this.form.maxGetCount };
+                    this.$api.completeMultipartUpload(completeDate).then(res => {
+                      if (res.code === 1) {
+                        console.log("合并文件完毕");
+                        const data = res.data;
+                        this.dialogTableVisible = false;
+                        this.percentage = 0;
+                        this.uploadProcessVisible = false;
+                        this.uploadSuccess = true;
+                        this.tackCode = data.takeCode;
+                        this.downloadUrl = data.url;
+                      } else {
+                        this.percentage = 0;
+                        this.uploadProcessVisible = false;
+                      }
+                    })
+                  });
+              } else {
+                this.uploadProcessVisible = false;
+              }
+
+            });
+          } else {
+            this.dialogTableVisible = false;
+            // this.uploadProcessVisible = true;
+            this.$api.upload(this.form, this.file).then(res => {
+              if (res.code === 1) {
+                const data = res.data;
+                console.log(data);
+                // this.uploadProcessVisible = false;
+                this.uploadSuccess = true;
+                this.tackCode = data.takeCode;
+                this.downloadUrl = data.url;
+              } else {
+                this.uploadProcessVisible = false;
+              }
+            });
           }
-          this.dialogTableVisible = false;
-          this.uploadProcessVisible = true;
-          this.$api.upload(this.form, this.file).then(res => {
-            if (res.code === 1) {
-              const data = res.data;
-              console.log(data);
-              this.uploadProcessVisible = false;
-              this.uploadSuccess = true;
-              this.tackCode = data.takeCode;
-              this.downloadUrl = data.url;
-            } else {
-              this.uploadProcessVisible = false;
-            }
-          });
+
         } else {
           return false;
         }
@@ -339,6 +411,7 @@ export default {
         if (res.code === 1) {
           const data = res.data;
           var type = data.type;
+          this.tackCodeFormVisible = false;
           if (type === "FILE") {
             window.location.href = this.$api.getFileDownloadUrl(code, pass);
           } else {
@@ -346,6 +419,7 @@ export default {
               if (res.code === 1) {
                 this.content = res.data;
                 this.takeContentVisible = true;
+                this.tackCodeFormVisible = false;
               }
             })
           }

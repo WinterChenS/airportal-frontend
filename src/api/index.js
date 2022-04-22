@@ -3,7 +3,7 @@
  * @Author: winterchen
  * @Description: TODO
  * @Version: 1.0
- * @LastEditTime: 2022-04-20 10:36:43
+ * @LastEditTime: 2022-04-22 13:35:36
  */
 import { request } from "./request.js";
 
@@ -19,7 +19,7 @@ const UserService = {
     return request.post(`${url}/register`, data);
   },
   logout(data) {
-    return request.post('${url}/logout', data);
+    return request.post(`${url}/logout`, data);
   }
 };
 
@@ -42,6 +42,18 @@ const ShareService = {
   },
   getFileDownloadUrl(code, pass) {
     return request.getUrl() + `${shareUrl}/take/${code}?pass=${pass}`;
+  },
+  listCurrent() {
+    return request.get(`${shareUrl}/list/current`);
+  },
+  createMultipartUpload(fileName, chunkSize) {
+    return request.post(`${shareUrl}/multipart/create`, {fileName: fileName, chunkSize: chunkSize});
+  },
+  async multipartUpload(uploadUrl, chunkData) {
+    return await request.put(uploadUrl, chunkData);
+  },
+  completeMultipartUpload(data) {
+    return request.post(`${shareUrl}/multipart/complete`, data);
   }
 };
 
