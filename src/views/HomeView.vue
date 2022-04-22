@@ -8,7 +8,7 @@
         <el-dropdown-menu class="menu-item" trigger="click">
           <el-dropdown-item @click.native="checkLogin">{{ userName }}</el-dropdown-item>
           <el-dropdown-item @click.native="myList">我的文件</el-dropdown-item>
-          <el-dropdown-item @click.native="logout">退出登录</el-dropdown-item>
+          <el-dropdown-item @click.native="logout">{{ logoutName }}</el-dropdown-item>
         </el-dropdown-menu>
       </el-dropdown>
     </div>
@@ -38,6 +38,12 @@ export default {
       userName: sessionStorage.getItem("user") === null ? '登录' : JSON.parse(sessionStorage.getItem("user")).userName,
       myListVisible: false,
       fileList: '',
+      logoutName: '',
+    }
+  },
+  created () {
+    if (sessionStorage.getItem("user") !== null) {
+      this.logoutName = '退出登录';
     }
   },
   methods: {
@@ -56,7 +62,10 @@ export default {
     },
     logout () {
       this.$api.logout().then(res => {
+        sessionStorage.clear()
+        sessionStorage.clear()
         this.userName = '请登录';
+        this.logoutName = '';
         this.$message({
           type: "success",
           message: "退出成功!"
