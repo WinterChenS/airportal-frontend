@@ -15,7 +15,7 @@
     <el-row>
       <el-button class="receive-button" @click="receiveFile" plain>接收</el-button>
     </el-row>
-    <el-dialog title="" :showClose="false" :visible.sync="dialogTableVisible" custom-class="app-dialog-box">
+    <el-dialog title="" :showClose="false" :visible.sync="dialogTableVisible" custom-class="app-dialog-box" center>
       <div class="file-list">
         {{ fileList[0].name }}
       </div>
@@ -42,7 +42,7 @@
       </div>
     </el-dialog>
 
-    <el-dialog title="" :showClose="false" :visible.sync="dialogContentVisible" custom-class="app-dialog-box">
+    <el-dialog title="" :showClose="false" :visible.sync="dialogContentVisible" custom-class="app-dialog-box" center>
       <el-form :model="contentForm" :rules="contentRules" ref="contentForm" label-width="80px" class="app-form">
         <el-form-item label="" prop="content">
           <el-input type="textarea" :rows="10" placeholder="请输入内容" v-model="contentForm.content" size="medium"
@@ -74,7 +74,7 @@
     </el-dialog>
 
 
-    <el-dialog title="取件" :visible.sync="tackCodeFormVisible">
+    <el-dialog title="取件" :visible.sync="tackCodeFormVisible" center>
       <el-form :model="takeForm" :rules="takeRules" label-width="80px" class="app-form" ref="takeForm">
         <el-form-item label="">
           <el-input v-model="takeForm.code" :clearable="true" autocomplete="off" placeholder="取件码"></el-input>
@@ -87,26 +87,27 @@
         <el-button type="primary" @click="takeFileForm('takeForm')">确 定</el-button>
       </div>
     </el-dialog>
-    <el-dialog title="取件" :visible.sync="takeContentVisible">
+    <el-dialog title="取件" :visible.sync="takeContentVisible" center>
       <el-input type="textarea" :rows="10" placeholder="" v-model="content" size="medium" :clearable="true">
       </el-input>
       <div slot="footer" class="dialog-footer">
         <el-button type="primary" v-clipboard:copy="content" v-clipboard:success="onCopy">复 制</el-button>
       </div>
     </el-dialog>
-    <el-dialog title="" :visible.sync="uploadSuccess" width="30%">
+    <el-dialog title="" :visible.sync="uploadSuccess" width="30%" center>
       <p class="popup-title">文件已成功发送</p>
       <p>您的取件码</p>
       <p id="receive-code">{{ tackCode }}</p>
       <p>接收文件时，请输入该6位数取件码</p>
-      <p>您也可以 <a class="link" v-clipboard:copy="downloadUrl" v-clipboard:success="onCopy">复制下载链接</a>
+      <p>您也可以 <a type="primary" v-clipboard:copy="downloadUrl" v-clipboard:success="onCopy">复 制
+        </a>
       </p>
       <span slot="footer" class="dialog-footer">
         <el-button type="primary" @click="uploadSuccess = false">确 定</el-button>
       </span>
     </el-dialog>
 
-    <el-dialog title="上传中.." :visible.sync="uploadProcessVisible">
+    <el-dialog title="上传中.." :visible.sync="uploadProcessVisible" center>
       <el-progress :percentage="percentage" :color="customColorMethod"></el-progress>
     </el-dialog>
     <el-dialog title="取件" :visible.sync="takeContentVisible">
@@ -230,6 +231,15 @@ export default {
       taskList: 0,
     };
   },
+  created () {
+    console.log(this.$route.query);
+    var query = this.$route.query;
+    if (query !== null && query.takeCode != null) {
+      var takeCode = query.takeCode;
+      this.tackCodeFormVisible = true;
+      this.takeForm.code = takeCode.substring(0, 6);
+    }
+  },
   methods: {
     async upload (e) {
       let formData = new FormData()
@@ -315,9 +325,9 @@ export default {
                         this.dialogTableVisible = false;
                         this.percentage = 0;
                         this.uploadProcessVisible = false;
-                        this.uploadSuccess = true;
                         this.tackCode = data.takeCode;
                         this.downloadUrl = data.url;
+                        this.uploadSuccess = true;
                       } else {
                         this.percentage = 0;
                         this.uploadProcessVisible = false;
@@ -337,9 +347,9 @@ export default {
                 const data = res.data;
                 console.log(data);
                 // this.uploadProcessVisible = false;
-                this.uploadSuccess = true;
                 this.tackCode = data.takeCode;
                 this.downloadUrl = data.url;
+                this.uploadSuccess = true;
               } else {
                 this.uploadProcessVisible = false;
               }
@@ -359,9 +369,9 @@ export default {
             if (res.code === 1) {
               this.dialogContentVisible = false;
               const data = res.data;
-              this.uploadSuccess = true;
               this.tackCode = data.takeCode;
               this.downloadUrl = data.url;
+              this.uploadSuccess = true;
             }
           })
         } else {

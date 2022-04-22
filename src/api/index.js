@@ -20,6 +20,9 @@ const UserService = {
   },
   logout(data) {
     return request.post(`${url}/logout`, data);
+  },
+  check() {
+    return request.get(`${url}/check`, null);
   }
 };
 
