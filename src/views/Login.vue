@@ -136,7 +136,6 @@ export default {
 
                     this.$api.login(this.ruleForm).then(res => {
                         if (res.code === 1) {
-                            const data = res.object;
                             sessionStorage.setItem("token", res.data.token);
 
                             this.$message({

@@ -7,15 +7,15 @@
         </el-button>
         <el-dropdown-menu class="menu-item" trigger="click">
           <el-dropdown-item @click.native="checkLogin">{{ userName }}</el-dropdown-item>
-          <el-dropdown-item @click.native="myList">我的文件</el-dropdown-item>
+          <el-dropdown-item @click.native="myList" v-show="userName !== '登录'">我的文件</el-dropdown-item>
           <el-dropdown-item @click.native="logout">{{ logoutName }}</el-dropdown-item>
         </el-dropdown-menu>
       </el-dropdown>
     </div>
     <div class="home">
       <HelloWorld msg="Welcome to Your Vue.js App" />
-      <el-dialog title="取件" :visible.sync="myListVisible" center>
-        <div>{{ fileList }}}</div>
+      <el-dialog title="取件" :visible.sync="myListVisible" width="30%" center>
+        <div v-html="fileList"></div>
         <div slot="footer" class="dialog-footer">
           <el-button type="primary" @click="myList">刷 新</el-button>
         </div>
@@ -56,7 +56,15 @@ export default {
       this.myListVisible = true;
       this.$api.listCurrent().then(res => {
         if (res.code === 1) {
-          this.fileList = '<el-tag  v-for="tag in tags" :key="tag.name" closable :type="tag.type"> ' + res.data.takeCode + ' </el-tag>'
+          if (res.data.length > 0) {
+            var list = '';
+            for (var item of res.data) {
+              list += '<div class="shareList" ><p class="shareItem">' + item.takeCode + '</p> <i @click.native="remove("' + item.takeCode + '")" class="el-icon-close" ></i> </div>';
+            }
+            this.fileList = list;
+          } else {
+            this.fileList = '<p>暂无数据</p>';
+          }
         }
       });
     },
@@ -71,6 +79,9 @@ export default {
           message: "退出成功!"
         });
       })
+    },
+    remove (takeCode) {
+      alert("删除" + takeCode);
     }
   }
 }
@@ -112,6 +123,20 @@ export default {
 
   .el-icon-s-operation {
     font-size: 30px;
+  }
+
+  .shareList {
+    height: 30px;
+    background: #dee7f7;
+    align-content: center;
+
+    .shareItem {
+      font-size: 17px;
+      margin-left: 5px;
+      margin-top: 2px;
+      display: initial;
+    }
+
   }
 
 }
