@@ -1,5 +1,6 @@
 const { defineConfig } = require('@vue/cli-service')
 module.exports = defineConfig({
+  // publicPath: "/airportal/",
   transpileDependencies: true,
     devServer: {
         host: "localhost",

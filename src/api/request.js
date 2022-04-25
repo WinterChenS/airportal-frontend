@@ -12,16 +12,18 @@
  import router from '@/router/index'
  import routers from "@/router";
  //axios.defaults.timeout = 5000;
- if (process.env.NODE_ENV == "development") {
-//    axios.defaults.baseURL = process.env.VUE_APP_URL;
-   axios.defaults.baseURL = "http://127.0.0.1:8080";
-   // axios.defaults.baseURL = "http://192.168.150.124:7201";
- } else if (process.env.NODE_ENV == "production") {
-   axios.defaults.baseURL = process.env.VUE_APP_URL;
- } else if (process.env.NODE_ENV == "test") {
-   axios.defaults.baseURL = process.env.VUE_APP_URL;
- }
- 
+//  if (process.env.NODE_ENV == "development") {
+// //    axios.defaults.baseURL = process.env.VUE_APP_URL;
+//    axios.defaults.baseURL = "http://127.0.0.1:8080";
+//    // axios.defaults.baseURL = "http://192.168.150.124:7201";
+//  } else if (process.env.NODE_ENV == "production") {
+  //    axios.defaults.baseURL = process.env.VUE_APP_URL;
+  //  } else if (process.env.NODE_ENV == "test") {
+    //    axios.defaults.baseURL = process.env.VUE_APP_URL;
+    //  }
+    
+    // axios.defaults.baseURL = "/back";
+       axios.defaults.baseURL = "http://127.0.0.1:8080";
 
  
 
@@ -74,7 +76,7 @@
      if(response.data.code === 2001){
        //登录超时重定向
        
-       window.location.href = "/login"
+       window.location.href = "../login"
      }
       else if (response.data.code !== 1 && response.statusText !== "OK") {
         
