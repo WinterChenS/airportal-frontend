@@ -3,7 +3,7 @@
  * @Author: winterchen
  * @Description: TODO
  * @Version: 1.0
- * @LastEditTime: 2022-04-22 13:35:36
+ * @LastEditTime: 2022-04-25 09:13:44
  */
 import { request } from "./request.js";
 
@@ -57,6 +57,9 @@ const ShareService = {
   },
   completeMultipartUpload(data) {
     return request.post(`${shareUrl}/multipart/complete`, data);
+  },
+  remove(takeCode) {
+    return request.post(`${shareUrl}/remove/${takeCode}`, null);
   }
 };
 

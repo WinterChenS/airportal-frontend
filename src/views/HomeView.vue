@@ -14,8 +14,14 @@
     </div>
     <div class="home">
       <HelloWorld msg="Welcome to Your Vue.js App" />
-      <el-dialog title="取件" :visible.sync="myListVisible" width="30%" center>
-        <div v-html="fileList"></div>
+      <el-dialog title="文件列表" :visible.sync="myListVisible" width="30%" center>
+        <!--<div v-html="fileList"></div>-->
+        <el-tag v-show="tags.length > 0" v-for="tag in tags" :key="tag.name" closable :type="success"
+          @close="remove(tag.name)">
+          <span style="margin-right: 8px; font-size: 18px;">{{ tag.name }}</span>
+          <span style="font-size: 8px;">{{ tag.type === "FILE" ? "文件" : "内容" }}</span>
+        </el-tag>
+        <p v-show="tags.length === 0" style="font-size: 15px; text-align: center; color: #b9bcc3;">暂无数据</p>
         <div slot="footer" class="dialog-footer">
           <el-button type="primary" @click="myList">刷 新</el-button>
         </div>
@@ -39,6 +45,7 @@ export default {
       myListVisible: false,
       fileList: '',
       logoutName: '',
+      tags: [],
     }
   },
   created () {
@@ -54,12 +61,14 @@ export default {
     },
     myList () {
       this.myListVisible = true;
+      this.tags = [];
       this.$api.listCurrent().then(res => {
         if (res.code === 1) {
           if (res.data.length > 0) {
             var list = '';
             for (var item of res.data) {
-              list += '<div class="shareList" ><p class="shareItem">' + item.takeCode + '</p> <i @click.native="remove("' + item.takeCode + '")" class="el-icon-close" ></i> </div>';
+              this.tags.push({ name: item.takeCode, type: item.type });
+              // list += '<div class="shareList" ><p class="shareItem">' + item.takeCode + '</p> <i @click.native="remove("' + item.takeCode + '")" class="el-icon-close" ></i> </div>';
             }
             this.fileList = list;
           } else {
@@ -72,7 +81,7 @@ export default {
       this.$api.logout().then(res => {
         sessionStorage.clear()
         sessionStorage.clear()
-        this.userName = '请登录';
+        this.userName = '登录';
         this.logoutName = '';
         this.$message({
           type: "success",
@@ -81,7 +90,15 @@ export default {
       })
     },
     remove (takeCode) {
-      alert("删除" + takeCode);
+      this.$api.remove(takeCode).then(res => {
+        if (res.code === 1) {
+          this.$message({
+            type: "success",
+            message: "删除成功!"
+          });
+          this.myList();
+        }
+      })
     }
   }
 }
@@ -125,21 +142,11 @@ export default {
     font-size: 30px;
   }
 
-  .shareList {
-    height: 30px;
-    background: #dee7f7;
-    align-content: center;
 
-    .shareItem {
-      font-size: 17px;
-      margin-left: 5px;
-      margin-top: 2px;
-      display: initial;
-    }
-
-  }
 
 }
+
+
 
 .menu-item {
   transform-origin: center top;
@@ -161,5 +168,19 @@ export default {
   width: 200px;
   border-radius: 2px;
   top: -10px !important;
+}
+
+.shareList {
+  height: 30px;
+  background: #dee7f7;
+  align-content: center;
+}
+
+.shareItem {
+  font-size: 17px;
+  margin-left: 5px;
+  margin-top: 2px;
+  display: flex;
+
 }
 </style>

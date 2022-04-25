@@ -125,6 +125,7 @@ import qs from "qs";
 import {
   request
 } from "../api/request.js";
+import { v4 as uuidv4 } from 'uuid';
 
 
 
@@ -305,19 +306,20 @@ export default {
             this.dialogTableVisible = false;
             this.uploadProcessVisible = true;
             const chunkSize = 5 * 1024 * 1024;
+            var uploadFileName = uuidv4() + "." + this.fileInfo.name.substring(this.fileInfo.name.lastIndexOf('.') + 1);;
+            console.log(uploadFileName);
             const chunkCount = Math.ceil(this.fileSize / chunkSize);
             console.log(this.fileInfo);
-            this.$api.createMultipartUpload(this.fileInfo.name, chunkCount).then(async res => {
+            this.$api.createMultipartUpload(uploadFileName, chunkCount).then(async res => {
               console.log("当前文件上传情况：初次上传 或 断点续传")
               console.log(res.data);
               if (res.code === 1) {
                 var chunkUploadUrls = res.data.chunks;
 
                 var wait = await this.multipartUpload(chunkUploadUrls, chunkSize);
-                console.log(wait);
                 Promise.all(wait)
                   .then(resultList => {
-                    const completeDate = { uploadId: res.data.uploadId, fileName: this.fileInfo.name, chunkSize: chunkCount, fileSize: this.fileSize, contentType: this.fileInfo.type, expire: this.form.expire, pass: this.form.pass, maxGetCount: this.form.maxGetCount };
+                    const completeDate = { uploadId: res.data.uploadId, fileName: this.fileInfo.name, uploadName: uploadFileName, chunkSize: chunkCount, fileSize: this.fileSize, contentType: this.fileInfo.type, expire: this.form.expire, pass: this.form.pass, maxGetCount: this.form.maxGetCount };
                     this.$api.completeMultipartUpload(completeDate).then(res => {
                       if (res.code === 1) {
                         console.log("合并文件完毕");
