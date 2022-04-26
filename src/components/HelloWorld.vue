@@ -428,8 +428,8 @@ export default {
           var type = data.type;
           this.tackCodeFormVisible = false;
           if (type === "FILE") {
-            window.location.href = this.$api.getFileDownloadUrl(code, pass);
-            // window.open(this.$api.getFileDownloadUrl(code, pass)); // 跳转到新的域名
+            // window.location.href = this.$api.getFileDownloadUrl(code, pass);
+            window.open(this.$api.getFileDownloadUrl(code, pass)); // 跳转到新的域名
             window.history.back(-1); // 返回到上一页（在当前窗口 ）
             this.tackCodeFormVisible = false;
           } else {
