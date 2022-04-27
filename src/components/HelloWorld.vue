@@ -147,7 +147,7 @@ export default {
       }
     };
     var validatorCode = (rule, value, callback) => {
-      if (value.length !== 6) {
+      if (value === null || value === undefined || value === "" || value.length !== 6) {
         callback(new Error("错误的取件码"));
       } else {
         callback();
