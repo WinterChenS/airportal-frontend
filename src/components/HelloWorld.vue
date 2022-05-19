@@ -437,7 +437,7 @@ export default {
           if (type === "FILE") {
             // window.location.href = this.$api.getFileDownloadUrl(code, pass);
             window.open(this.$api.getFileDownloadUrl(code, pass)); // 跳转到新的域名
-            window.history.back(-1); // 返回到上一页（在当前窗口 ）
+            // window.history.back(-1); // 返回到上一页（在当前窗口 ）
             this.tackCodeFormVisible = false;
           } else {
             this.$api.take(code, pass).then(res => {
