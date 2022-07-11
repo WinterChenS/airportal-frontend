@@ -16,9 +16,9 @@ echo "镜像版本为：$version"
 echo "------------------------"
 
 
-npm install &&
+# npm install &&
 
-npm run build &&
+# npm run build &&
 
 docker build -t airportal-frontend . &&
 
