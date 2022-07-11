@@ -3,7 +3,7 @@
  * @Author: winterchen
  * @Description: TODO
  * @Version: 1.0
- * @LastEditTime: 2022-04-25 09:13:44
+ * @LastEditTime: 2022-06-30 14:44:35
  */
 import { request } from "./request.js";
 
@@ -30,8 +30,8 @@ const ShareService = {
   upload(query, data) {
     return request.uploadFile(`${shareUrl}/upload/file`, query, data);
   },
-  uploadContent(query) {
-    return request.uploadFile(`${shareUrl}/upload/content`, query, null);
+  uploadContent(data) {
+    return request.post(`${shareUrl}/upload/content`, data);
   },
   checkPass(code) {
     console.log(code, "code=")

@@ -99,7 +99,7 @@
       <p>您的取件码</p>
       <p id="receive-code">{{ tackCode }}</p>
       <p>接收文件时，请输入该6位数取件码</p>
-      <p>您也可以 <a type="primary" v-clipboard:copy="downloadUrl" v-clipboard:success="onCopy">复 制
+      <p>您也可以 <a type="primary" v-clipboard:copy="downloadUrl" v-clipboard:success="onCopy">复制分享连接
         </a>
       </p>
       <span slot="footer" class="dialog-footer">
@@ -229,7 +229,7 @@ export default {
       out5M: false,
       fileInfo: {},
       fileB: null,
-      taskList: 0,
+      taskList: 0
     };
   },
   created () {
@@ -262,16 +262,17 @@ export default {
     beforeUpload (file) {
       this.fileSize = file.size;
       this.out5M = file.size / 1024 / 1024 > 5;
-      const isLt2M = file.size / 1024 / 1024 < 500;
+      // const isLt2M = file.size / 1024 / 1024 < 500;
       this.fileInfo = file;
-      if (!isLt2M) {
-        this.$message.error('上传文件大小大小不能超过 500MB!');
-        return isLt2M;
-      }
+      // if (!isLt2M) {
+      //   this.$message.error('上传文件大小大小不能超过 500MB!');
+      //   return isLt2M;
+      // }
     },
     multipartUpload (chunkUploadUrls, chunkSize) {
       return new Promise((resolve1) => {
         var list = [];
+        let uploadNum = 0;
         for (var item of chunkUploadUrls) {
           //分片开始位置
           let start = (item.partNumber) * chunkSize
@@ -279,14 +280,16 @@ export default {
           let end = Math.min(this.fileSize, start + chunkSize)
           //取文件指定范围内的byte，从而得到分片数据
           let _chunkFile = this.fileB.slice(start, end)
-          console.log("开始上传第" + item.partNumber + "个分片")
+          console.log("开始上传第" + uploadNum + "个分片")
 
           let pro = new Promise((resolve) => {
             this.$api.multipartUpload(item.uploadUrl, _chunkFile).then(res => {
               console.log(res, "res=")
-              console.log("完成上传第" + item.partNumber + "个分片")
+              console.log("完成上传第" + uploadNum + "个分片")
               // list.push(this.taskList);
+              uploadNum++;
               this.taskList++;
+              this.percentage = Math.floor((uploadNum / chunkUploadUrls.length) * 100)
               resolve(this.taskList++);
               if (this.percentage <= 80) {
                 this.percentage += 10;
@@ -346,7 +349,8 @@ export default {
             });
           } else {
             this.dialogTableVisible = false;
-            // this.uploadProcessVisible = true;
+            this.uploadProcessVisible = true;
+            this.percentage = 90;
             this.$api.upload(this.form, this.file).then(res => {
               if (res.code === 1) {
                 const data = res.data;
@@ -354,9 +358,12 @@ export default {
                 // this.uploadProcessVisible = false;
                 this.tackCode = data.takeCode;
                 this.downloadUrl = data.url;
+                this.uploadProcessVisible = false;
                 this.uploadSuccess = true;
+                this.percentage = 0;
               } else {
                 this.uploadProcessVisible = false;
+                this.percentage = 0;
               }
             });
           }
@@ -430,7 +437,7 @@ export default {
           if (type === "FILE") {
             // window.location.href = this.$api.getFileDownloadUrl(code, pass);
             window.open(this.$api.getFileDownloadUrl(code, pass)); // 跳转到新的域名
-            window.history.back(-1); // 返回到上一页（在当前窗口 ）
+            // window.history.back(-1); // 返回到上一页（在当前窗口 ）
             this.tackCodeFormVisible = false;
           } else {
             this.$api.take(code, pass).then(res => {
@@ -450,13 +457,7 @@ export default {
       // this.$refs["takeForm"].resetFields();
     },
     customColorMethod (percentage) {
-      if (this.percentage < 30) {
-        return '#909399';
-      } else if (this.percentage < 70) {
-        return '#e6a23c';
-      } else {
-        return '#67c23a';
-      }
+      return '#67c23a';
     }
   }
 }
